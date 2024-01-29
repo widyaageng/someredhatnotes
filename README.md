@@ -348,6 +348,18 @@ _=/usr/bin/printenv
 
 ---
 ### ps aux | grep systemd ###
+
+```
+SELECT
+	jsonb_object_agg(a.segment, a.payload) AS result, a.businessdate
+FROM (
+select t.segment,
+			t.businessdate,
+			json_agg(j) as payload from public.trending_ut t cross join lateral jsonb_array_elements(payload) as j
+			where (j->>'ranking')::int <= 2
+			group by t.segment, t.businessdate) a
+group by a.businessdate;
+```
 ![systemd](https://i.ibb.co/DGs3tcv/Screenshot-2023-03-15-at-12-07-35-AM.png)
 
 ---
